@@ -167,6 +167,10 @@ def _audit(event, args):
             if isinstance(raw, int):
                 # fdopen does not open a new path. Its descriptor came through open.
                 return
+            if _PLATFORM == "win32" and os.fsdecode(raw).casefold() == "nul":
+                # The exact Win32 null-device spelling is not a filesystem path.
+                # Do not permit arbitrary paths whose final component is NUL.
+                return
             path = os.path.abspath(os.fsdecode(raw))
             writing = bool(
                 flags & (os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC | os.O_APPEND)

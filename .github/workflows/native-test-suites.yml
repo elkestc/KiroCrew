@@ -10,8 +10,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-14
-            group: '0'
+          - os: windows-2025
+            group: '1'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 70
     steps:

@@ -17,6 +17,13 @@ def _digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def test_platform_null_device_remains_available_without_file_access():
+    with open(os.devnull, "wb") as stream:
+        stream.write(b"DISPOSABLE_NULL_DEVICE_ONLY")
+    with open(os.devnull, "rb") as stream:
+        assert stream.read() == b""
+
+
 def _directory_link(link, target):
     if sys.platform == "win32":
         subprocess.run(

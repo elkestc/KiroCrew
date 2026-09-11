@@ -104,7 +104,7 @@ def prepare_source(source, root):
     for name in ("homes/collection", "tmp", "results"):
         (root / name).mkdir(parents=True)
     shutil.copytree(source / "repo", root / "repo", symlinks=False)
-    for name in ("native_probe.py", "native_entry.py"):
+    for name in ("native_probe.py", "native_entry.py", "native_suite.py"):
         shutil.copyfile(source / name, root / name)
     shutil.copyfile(root / "repo/test_isolation.py", root / "test_isolation.py")
     shutil.copyfile(root / "repo/native_test_boundary.py", root / "native_test_boundary.py")

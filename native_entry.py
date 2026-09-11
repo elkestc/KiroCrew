@@ -7,6 +7,8 @@ import re
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
+
+from native_suite import diagnose_log
 from pathlib import Path
 
 
@@ -153,6 +155,7 @@ def main():
             "label": label,
             "exit_code": result.returncode,
             "log_sha256": hashlib.sha256(log.read_bytes()).hexdigest(),
+            "diagnostics": diagnose_log(log),
         }
         if report.is_file():
             cases = list(ET.parse(report).getroot().iter("testcase"))
