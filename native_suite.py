@@ -12,6 +12,30 @@ import uuid
 from native_probe import digest, execute
 
 
+def diagnose_log(path):
+    text = path.read_text(encoding='utf-8', errors='replace')
+    tags = ['permission denied', 'operation not permitted', 'unbound variable',
+            'invalid profile', 'invalid filter', 'syntax error', 'unknown operation',
+            'native test root is not launcher-owned', 'macos os sandbox is required',
+            'synthetic host canary is required', 'native host canary is accessible',
+            'native offline network boundary', 'linked or reparse test path refused',
+            'lexical test path escapes allowed root', 'modulenotfounderror',
+            'filenotfounderror', 'calledprocesserror', 'testrootviolation',
+            'attributeerror', 'typeerror', 'runtimeerror', 'pyvenv.cfg']
+    frames = re.findall(r'File "[^"\n]*[/\\]([A-Za-z0-9_.-]+\.py)", line (\d+)', text)
+    data = {'tags': [tag for tag in tags if tag in text.lower()],
+            'frames': [{'file': name, 'line': int(line)} for name, line in frames]}
+    for line in text.splitlines():
+        if line.startswith('{'):
+            try:
+                row = json.loads(line)
+            except ValueError:
+                continue
+            if 'linked_read_rejected' in row and all(type(value) in (bool, int) or value is None for value in row.values()):
+                data['containment_probe'] = row
+    return data
+
+
 def environment(root, runtime_paths):
     home = root / 'homes' / 'collection'
     env = {
@@ -90,7 +114,8 @@ RUN uv pip install --system -e ".[voice,desktop]" --group dev
         execute(['docker', 'cp', container + ':C:\\test-root\\results', str(owned / 'results')])
         return {'exit_code': state['State']['ExitCode'], 'launcher_exit_code': result.returncode,
                 'no_mounts': state['Mounts'] == [], 'network_mode_none': state['HostConfig']['NetworkMode'] == 'none',
-                'runtime_image_id': image, 'launcher_log_sha256': digest(log.read_bytes())}
+                'runtime_image_id': image, 'launcher_log_sha256': digest(log.read_bytes()),
+                'launcher_diagnostics': diagnose_log(log)}
     finally:
         execute(['docker', 'rm', '--force', container])
 
@@ -143,7 +168,8 @@ def macos(source, owned, canary):
                                 stdout=stream, stderr=subprocess.STDOUT, timeout=2400)
     shutil.copytree(root / 'results', owned / 'results')
     return {'exit_code': result.returncode, 'default_deny_profile': True,
-            'profile_sha256': digest(profile.read_bytes()), 'launcher_log_sha256': digest(log.read_bytes())}
+            'profile_sha256': digest(profile.read_bytes()), 'launcher_log_sha256': digest(log.read_bytes()),
+            'launcher_diagnostics': diagnose_log(log)}
 
 
 def main():
