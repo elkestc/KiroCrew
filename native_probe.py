@@ -26,8 +26,16 @@ def execute(argv, **kwargs):
     result = subprocess.run(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             timeout=kwargs.pop('timeout', 120), **kwargs)
     if result.returncode:
+        known_errors = ['manifest unknown', 'no matching manifest', 'access is denied',
+                        'failed to register layer', 'no space left', 'timeout',
+                        'context deadline exceeded', 'hcsshim', 'cannot find',
+                        'network', 'connection', 'not found', 'unexpected status',
+                        'unauthorized', 'tls', 'certificate', 'mismatch']
+        lowered = result.stderr.decode('utf-8', errors='replace').lower()
         raise RuntimeError(json.dumps({'exit_code': result.returncode,
-                                      'stderr_sha256': digest(result.stderr)}))
+                                      'stderr_sha256': digest(result.stderr),
+                                      'operation': Path(argv[0]).name + ':' + argv[1],
+                                      'diagnostic_tags': [tag for tag in known_errors if tag in lowered]}))
     return result.stdout
 
 
@@ -180,7 +188,7 @@ def macos_probe(source, owned, host_canary):
         return '"' + raw + '"'
     read_roots = [Path('/System'), Path('/usr'), Path('/bin'), runtime, root]
     rules = ['(version 1)', '(deny default)', '(allow process*)', '(allow sysctl-read)',
-             '(deny network*)']
+             '(deny network*)', '(allow file-read* (literal "/"))']
     rules += ['(allow file-read* (subpath ' + literal(path) + '))' for path in read_roots]
     rules += ['(allow file-write* (subpath ' + literal(root) + '))']
     for path in ['/dev/null', '/dev/urandom', '/dev/random']:
@@ -236,7 +244,7 @@ def main():
                 detail = json.loads(str(error))
             except ValueError:
                 detail = {}
-            if set(detail) == {'exit_code', 'stderr_sha256'}:
+            if set(detail) <= {'exit_code', 'stderr_sha256', 'operation', 'diagnostic_tags'}:
                 summary.update(detail)
     summary['host_canary_unchanged'] = digest(host_canary.read_bytes()) == before
     summary['passed'] = summary['passed'] and summary['host_canary_unchanged']
