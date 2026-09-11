@@ -30,7 +30,9 @@ def execute(argv, **kwargs):
                         'failed to register layer', 'no space left', 'timeout',
                         'context deadline exceeded', 'hcsshim', 'cannot find',
                         'network', 'connection', 'not found', 'unexpected status',
-                        'unauthorized', 'tls', 'certificate', 'mismatch']
+                        'unauthorized', 'tls', 'certificate', 'mismatch',
+                        'directory', 'exist', 'invalid', 'not supported',
+                        'copying between containers', 'no such']
         lowered = result.stderr.decode('utf-8', errors='replace').lower()
         raise RuntimeError(json.dumps({'exit_code': result.returncode,
                                       'stderr_sha256': digest(result.stderr),
@@ -152,10 +154,15 @@ def windows_probe(source, owned, host_canary):
     try:
         state = json.loads(execute(['docker', 'inspect', container_id]))[0]
         assert state['HostConfig']['NetworkMode'] == 'none' and state['Mounts'] == []
+        bundle = owned / 'probe'
+        bundle.mkdir()
         for name, path in [('native_probe.py', source / 'native_probe.py'),
                            ('test_isolation.py', source / 'test_isolation.py'),
                            ('request.json', request)]:
-            execute(['docker', 'cp', str(path), container_id + ':C:\\probe\\' + name])
+            shutil.copyfile(path, bundle / name)
+        # A stopped container has not created its configured working directory.
+        # Copy the whole directory into the existing drive root before starting.
+        execute(['docker', 'cp', str(bundle), container_id + ':C:\\'])
         result = subprocess.run(['docker', 'start', '--attach', container_id],
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=90)
         data = parse_payload(result.stdout)
