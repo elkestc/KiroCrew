@@ -128,7 +128,9 @@ def test_original_snapshot_and_write_shapes_use_fake_credentials(fake_home):
     assert _digest(target) == before
 
 
-@pytest.mark.parametrize("prefix", ["/dev/fd"] if sys.platform == "darwin" else ["/dev/fd", "/proc/self/fd"])
+@pytest.mark.parametrize(
+    "prefix", ["/dev/fd"] if sys.platform == "darwin" else ["/dev/fd", "/proc/self/fd"]
+)
 @pytest.mark.parametrize("operation", ["read", "write"])
 @pytest.mark.skipif(sys.platform == "win32", reason="Windows has no POSIX descriptor path aliases")
 def test_descriptor_alias_cannot_escape_root(escaping_aws, monkeypatch, prefix, operation):

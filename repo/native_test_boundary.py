@@ -8,10 +8,10 @@ collection. They do not replace the parent OS boundary with a Python sandbox.
 import ctypes
 import errno
 import os
-from pathlib import Path
 import re
 import socket
 import sys
+from pathlib import Path
 
 
 def verify_native_boundary():
@@ -21,8 +21,7 @@ def verify_native_boundary():
             raise RuntimeError("Native test root is not launcher-owned")
         import winreg
 
-        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                           r"SYSTEM\CurrentControlSet\Control") as key:
+        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control") as key:
             value, kind = winreg.QueryValueEx(key, "ContainerType")
         if kind != winreg.REG_DWORD or not isinstance(value, int):
             raise RuntimeError("Windows container OS boundary is required")
@@ -37,16 +36,26 @@ def verify_native_boundary():
         # Publicly used Darwin SPI: a null operation queries sandbox membership.
         if check(os.getpid(), None, 0) != 1:
             raise RuntimeError("macOS OS sandbox is required")
-        runtime = ("/System", "/usr", "/bin", "/opt/homebrew",
-                   "/Library/Developer/CommandLineTools", str(Path(sys.base_prefix)), str(Path(sys.prefix)))
+        runtime = (
+            "/System",
+            "/usr",
+            "/bin",
+            "/opt/homebrew",
+            "/Library/Developer/CommandLineTools",
+            str(Path(sys.base_prefix)),
+            str(Path(sys.prefix)),
+        )
     else:
         raise RuntimeError("Unsupported native test boundary")
     # This is a newly created fake file outside the allowed root. Never probe a
     # credential path or a user profile to test whether the boundary holds.
     canary = os.environ.get("KIROCREW_TEST_HOST_CANARY", "")
     expected = str(Path(root).parent / "synthetic-host-sentinel")
-    valid_canary = (re.fullmatch(r"C:\\kct-[a-f0-9]{8}\\synthetic-host-sentinel", canary)
-                    if sys.platform == "win32" else canary == expected)
+    valid_canary = (
+        re.fullmatch(r"C:\\kct-[a-f0-9]{8}\\synthetic-host-sentinel", canary)
+        if sys.platform == "win32"
+        else canary == expected
+    )
     if not valid_canary:
         raise RuntimeError("Synthetic host canary is required")
     for mode in ("rb", "r+b"):
@@ -62,8 +71,15 @@ def verify_native_boundary():
             connection.connect(("192.0.2.1", 443))
     except OSError as error:
         if error.errno not in {
-            errno.ENETUNREACH, errno.EHOSTUNREACH, errno.EPERM, errno.EACCES,
-            errno.ENETDOWN, 10051, 10065, 10013, 10050,
+            errno.ENETUNREACH,
+            errno.EHOSTUNREACH,
+            errno.EPERM,
+            errno.EACCES,
+            errno.ENETDOWN,
+            10051,
+            10065,
+            10013,
+            10050,
         }:
             raise RuntimeError("Native offline network boundary was not proven") from None
     else:

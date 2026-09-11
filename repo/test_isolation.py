@@ -177,7 +177,9 @@ def _audit(event, args):
                     import fcntl
 
                     descriptor = int(path.rsplit("/", 1)[1])
-                    target = os.fsdecode(fcntl.fcntl(descriptor, 50, bytes(1024)).split(b"\0", 1)[0])
+                    target = os.fsdecode(
+                        fcntl.fcntl(descriptor, 50, bytes(1024)).split(b"\0", 1)[0]
+                    )
                 else:
                     target = os.readlink(path)
                 if target.startswith("/memfd:"):
@@ -276,7 +278,9 @@ def require_isolated_environment() -> AllowedTestRoot:
         return _BOUNDARY
     if sys.platform == "linux":
         if sys.platform != "linux" or os.environ.get("KIROCREW_TEST_ROOT") != "/test-root":
-            raise RuntimeError("Host-connected pytest is forbidden; use scripts/run_isolated_tests.py")
+            raise RuntimeError(
+                "Host-connected pytest is forbidden; use scripts/run_isolated_tests.py"
+            )
         if any(os.path.lexists(p) for p in ("/home", "/mnt", "/run/WSL", "/root")):
             raise RuntimeError("Host-home or WSL mount namespace is visible")
         # No non-loopback interface, default route, or credential-bearing inherited env.
