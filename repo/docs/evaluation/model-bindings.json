@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "status": "native_resolver_verified_partial_entitlement",
+  "purpose": "Role binding index for native-codex-config.json and native-claude-config.json; both native fragments pass offline loader/resolver verification. No role team is activated.",
+  "policy": {
+    "subscription_only": true,
+    "automatic_provider_fallback": false,
+    "automatic_model_fallback": false,
+    "automatic_effort_reduction": false,
+    "require_runtime_readback_before_prompt": true
+  },
+  "bindings": {
+    "owner": {
+      "openai": { "model": "gpt-6-astra", "effort": "high" },
+      "anthropic": {
+        "model": "claude-fable-5-1[1m]",
+        "catalog_resolved_model": "claude-fable-5-1",
+        "effort": "high",
+        "blocked_reason": "Advertised in the earlier Windows catalog but absent from the fresh authenticated Linux catalog; no substitution."
+      }
+    },
+    "lead_and_review": {
+      "openai": { "model": "gpt-5.6-sol", "effort": "high" },
+      "anthropic": { "model": "claude-opus-5[1m]", "catalog_resolved_model": "claude-opus-5[1m]", "effort": "high" }
+    },
+    "implementation": {
+      "openai": { "model": "gpt-5.6-terra", "effort": "high" },
+      "anthropic": { "model": "claude-sonnet-5", "catalog_resolved_model": "claude-sonnet-5", "effort": "high" }
+    },
+    "mechanical": {
+      "openai": { "model": "gpt-5.6-luna", "effort": "low" },
+      "anthropic": {
+        "model": "claude-haiku-4-5-20251001",
+        "catalog_resolved_model": "claude-haiku-4-5-20251001",
+        "effort": "low",
+        "blocked_reason": "The authenticated catalog advertises no effort selector; this exact binding is not accepted."
+      }
+    }
+  },
+  "roles": {
+    "owner_representative": "owner",
+    "architect": "lead_and_review",
+    "a_lead": "lead_and_review",
+    "b_lead": "lead_and_review",
+    "correctness_reviewer": "lead_and_review",
+    "rules_reviewer": "lead_and_review",
+    "implementer": "implementation",
+    "test_engineer": "implementation",
+    "researcher": "implementation",
+    "mechanical_worker": "mechanical"
+  }
+}

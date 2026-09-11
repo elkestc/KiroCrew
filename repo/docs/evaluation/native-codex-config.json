@@ -1,0 +1,92 @@
+{
+  "agent": {
+    "provider": "acp",
+    "acp_backend": "codex",
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "high",
+    "require_exact_binding": true,
+    "fallback_model": "",
+    "sandbox": "auto",
+    "approval_mode": "interactive",
+    "role_models": {
+      "background": "gpt-5.6-terra",
+      "subagent": "gpt-5.6-terra"
+    },
+    "role_efforts": {
+      "background": "high",
+      "subagent": "high"
+    },
+    "max_subagents": 3
+  },
+  "session": {
+    "pool_size": 0
+  },
+  "agents": {
+    "owner_representative": {
+      "kiro_agent": "kirocrew",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "description": "Evaluation binding only; no active role session."
+    },
+    "architect": {
+      "kiro_agent": "kirocrew",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "high",
+      "description": "Evaluation binding only; no active role session."
+    },
+    "a_lead": {
+      "kiro_agent": "kirocrew",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "high",
+      "description": "Evaluation binding only; no active role session."
+    },
+    "b_lead": {
+      "kiro_agent": "kirocrew",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "high",
+      "description": "Evaluation binding only; no active role session."
+    },
+    "correctness_reviewer": {
+      "kiro_agent": "kirocrew",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "high",
+      "description": "Evaluation binding only; no active role session."
+    },
+    "rules_reviewer": {
+      "kiro_agent": "kirocrew",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "high",
+      "description": "Evaluation binding only; no active role session."
+    },
+    "implementer": {
+      "kiro_agent": "kirocrew",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "description": "Evaluation binding only; no active role session."
+    },
+    "test_engineer": {
+      "kiro_agent": "kirocrew",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "description": "Evaluation binding only; no active role session."
+    },
+    "researcher": {
+      "kiro_agent": "kirocrew",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "description": "Evaluation binding only; no active role session."
+    },
+    "mechanical_worker": {
+      "kiro_agent": "kirocrew",
+      "model": "gpt-5.6-luna",
+      "reasoning_effort": "low",
+      "description": "Evaluation binding only; no active role session."
+    },
+    "kirocrew-heartbeat": {
+      "kiro_agent": "kirocrew-heartbeat",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "description": "Evaluation heartbeat binding; no persistent service enabled."
+    }
+  }
+}

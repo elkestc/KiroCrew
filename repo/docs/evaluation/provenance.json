@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "evaluation_date_jst": "2026-09-11",
+  "upstream_url": "https://github.com/kirodotdev/KiroCrew",
+  "fork_url": "https://github.com/elkestc/KiroCrew",
+  "commit": "395dc8df14610973b0753f5e88fa9bd8b08e1830",
+  "branch": "feat/subscription-evaluation",
+  "release_tag_at_commit": null,
+  "tag_evidence": "git ls-remote --tags upstream: no reference at pinned SHA",
+  "source_version": "0.7.0",
+  "hash_convention": "Upstream blob hashes exclude checkout CRLF translation; checkout hashes capture local bytes.",
+  "source_hashes": {
+    ".github/review-cli/package-lock.json": {
+      "upstream_blob_sha256": "04fbe49624bb6a2990b08912f3300998a58cf9822ad9b6502feb3cea3f0fcbe0",
+      "checkout_sha256": "04fbe49624bb6a2990b08912f3300998a58cf9822ad9b6502feb3cea3f0fcbe0"
+    },
+    "LICENSE": {
+      "upstream_blob_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "checkout_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    "NOTICE": {
+      "upstream_blob_sha256": "2452715e2d1a0154caf0da8b64f07d518e5edd119613ddef263dd187b76b3422",
+      "checkout_sha256": "2452715e2d1a0154caf0da8b64f07d518e5edd119613ddef263dd187b76b3422"
+    },
+    "THIRD-PARTY-NOTICES": {
+      "upstream_blob_sha256": "dcf69f7d83e500f953d80e1fd31d5c97286f07ab26ccf7a4dd4e9cf364e19d62",
+      "checkout_sha256": "dcf69f7d83e500f953d80e1fd31d5c97286f07ab26ccf7a4dd4e9cf364e19d62"
+    },
+    "packages/kirocrew-client-py/pyproject.toml": {
+      "upstream_blob_sha256": "8ede2cc05b5cc502732aef04b1fd03287661ff6b2d5a38fa2662695ad0e45066",
+      "checkout_sha256": "8ede2cc05b5cc502732aef04b1fd03287661ff6b2d5a38fa2662695ad0e45066"
+    },
+    "pyproject.toml": {
+      "upstream_blob_sha256": "29b08194999a2a4ebfbe431cb49b1e08eb869c377d14e98ac206a9e2cf03676c",
+      "checkout_sha256": "29b08194999a2a4ebfbe431cb49b1e08eb869c377d14e98ac206a9e2cf03676c"
+    },
+    "site/package-lock.json": {
+      "upstream_blob_sha256": "6cc36fa45d069542ad65289d7191721b24a85bdf9698d2828e88950da5c2b581",
+      "checkout_sha256": "6cc36fa45d069542ad65289d7191721b24a85bdf9698d2828e88950da5c2b581"
+    },
+    "website/electron/package-lock.json": {
+      "upstream_blob_sha256": "5457ac2f13d70493d92800cd1d0d23f963788c3648a1bbf66148a6ba63650cc9",
+      "checkout_sha256": "5457ac2f13d70493d92800cd1d0d23f963788c3648a1bbf66148a6ba63650cc9"
+    },
+    "website/package-lock.json": {
+      "upstream_blob_sha256": "3e784981d90dd498f8bdbcbdb616e4e2b293745ac125b9843d7116cc2abd267c",
+      "checkout_sha256": "3e784981d90dd498f8bdbcbdb616e4e2b293745ac125b9843d7116cc2abd267c"
+    }
+  },
+  "python_lockfile": null,
+  "python_lock_note": "Tracked pyproject constrains dependencies; no uv/Poetry lockfile is present. Installed package versions captured separately.",
+  "wheel": {
+    "filename": "kirocrew-0.7.0-py3-none-any.whl",
+    "sha256": "409975395eb5585a3200b5369fa9db46b131ed75a376c9a9324d8ffffab27f4c",
+    "bytes": 78937604,
+    "license_entries": [
+      "kirocrew-0.7.0.dist-info/licenses/LICENSE",
+      "kirocrew-0.7.0.dist-info/licenses/NOTICE"
+    ],
+    "static_dist_file_count": 2377,
+    "has_static_index": true
+  },
+  "runtime_source_changed": false,
+  "local_changes": [
+    " M docs/README.md",
+    "?? docs/evaluation/README.md",
+    "?? docs/evaluation/capability-matrix.md",
+    "?? docs/evaluation/decision-report.md",
+    "?? docs/evaluation/jira-spike.md",
+    "?? docs/evaluation/model-matrix.md",
+    "?? docs/evaluation/native-discord.md",
+    "?? docs/evaluation/native-git-github.md",
+    "?? docs/evaluation/native-liveness.md",
+    "?? docs/evaluation/native-memory.md",
+    "?? docs/evaluation/native-multi-agent.md",
+    "?? docs/evaluation/native-security.md",
+    "?? docs/evaluation/native-taskrunner.md",
+    "?? docs/evaluation/provenance.json",
+    "?? docs/evaluation/provider-anthropic.md",
+    "?? docs/evaluation/provider-openai.md",
+    "?? docs/evaluation/source-map.md",
+    "?? docs/evaluation/upstream-baseline.md"
+  ]
+}

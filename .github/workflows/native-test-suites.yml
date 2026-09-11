@@ -1,0 +1,36 @@
+name: Native offline suites
+on:
+  push:
+    branches: [validation/native-test-suites-20260911]
+permissions:
+  contents: read
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2025
+            group: '1'
+          - os: macos-14
+            group: '0'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: false
+      - name: Run copied sources within the verified native boundary
+        run: python native_suite.py ${{ matrix.group }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-suite-${{ matrix.os }}-${{ matrix.group }}
+          path: native-summary.json
+          if-no-files-found: error

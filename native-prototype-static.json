@@ -1,0 +1,22 @@
+{
+  "syntax_valid": [
+    "native_suite.py",
+    "native_entry.py",
+    "native_probe.py",
+    "repo/native_test_boundary.py",
+    "repo/test_isolation.py",
+    "repo/scripts/start_test_run.py",
+    "repo/conftest.py",
+    "repo/test/test_offline_boundary.py"
+  ],
+  "source_sha256": {
+    "native_suite.py": "1967e029ccd50a1fbc0868e9f745288b3c943df394c427314edd0b3b4b0d9572",
+    "native_entry.py": "50c226ddd410b6d8faf24572cfd2a7b93190b32773eca24cb2580c29072bacb1",
+    "native_probe.py": "0cccb10bad56b9098177702e0494fdb996044d6b8baf687b71e949489bd0fd68",
+    "repo/native_test_boundary.py": "af515cefef349bbe0190d39aeb15d75178582d3a73a2febd45564c596d635b71",
+    "repo/test_isolation.py": "d118f93a4f0d0519fe25cdd6ab960c75ff89f3659937eea2a56bd7a432e2f36b",
+    "repo/scripts/start_test_run.py": "5577a0f531e896708f3800e8a8f128ffea379b71aeaf72419fc3fdceb37a2ab2",
+    "repo/conftest.py": "45e1ecd4d3a9ef271419f3a789c42d26ba4e0abb97e60334f5567c304e970d18",
+    "repo/test/test_offline_boundary.py": "f2a591a9c2f78ea5b52ed33a715c57bb464598535afbd4d86494676eae2cd38f"
+  }
+}

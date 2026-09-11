@@ -1,0 +1,37 @@
+name: Prepare offline Python tests
+description: Prepare dependencies separately from the mandatory offline test namespace
+inputs:
+  extras:
+    description: Package extras to install before disconnecting tests
+    default: voice,desktop
+  install-package:
+    description: Install package dependencies, or prepare a standard-library checker runtime only
+    default: 'true'
+runs:
+  using: composite
+  steps:
+    - name: Prepare Linux runtime and namespace support
+      shell: bash
+      env:
+        TEST_EXTRAS: ${{ inputs.extras }}
+        INSTALL_TEST_PACKAGE: ${{ inputs.install-package }}
+      run: |
+        set -euo pipefail
+        test "$RUNNER_OS" = Linux || { echo 'Offline Linux preparation requires Linux'; exit 1; }
+        sudo apt-get update -qq
+        sudo apt-get install -y bubblewrap python3.12-venv
+        sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+        unshare --mount --map-root-user true
+        # The runtime must live under /usr, which the namespace exposes read-only.
+        # setup-python's /opt interpreter is intentionally outside that boundary.
+        /usr/bin/python3.12 -m venv --copies "$RUNNER_TEMP/offline-test-venv"
+        if [ "$INSTALL_TEST_PACKAGE" = true ]; then
+          uv pip install --python "$RUNNER_TEMP/offline-test-venv/bin/python" -e ".[${TEST_EXTRAS}]" --group dev
+        elif [ "$INSTALL_TEST_PACKAGE" = false ]; then
+          # The namespace overlays this source entry with its disposable copy.
+          printf '/test-root/repo/src\n' > "$RUNNER_TEMP/offline-test-venv/lib/python3.12/site-packages/__editable__.kirocrew-ci.pth"
+        else
+          echo 'install-package must be true or false'
+          exit 1
+        fi
+        printf 'KIROCREW_CI_TEST_VENV=%s\n' "$RUNNER_TEMP/offline-test-venv" >> "$GITHUB_ENV"
