@@ -26,10 +26,20 @@ def main():
     for args in (['init', '--template=', '--initial-branch=isolated-fixture', '.'],
                  ['add', '--force', '--all', '--', '.'],
                  ['commit', '--quiet', '-m', 'Disposable source fixture']):
-        subprocess.run(['git', '-c', 'core.hooksPath=' + os.devnull,
+        result = subprocess.run(['git', '-c', 'core.hooksPath=' + os.devnull,
                         '-c', 'core.autocrlf=false', '-c', 'commit.gpgsign=false',
                         '-c', 'user.name=Disposable Test', '-c', 'user.email=test@invalid',
-                        *args], cwd=repo, capture_output=True, check=True, timeout=300)
+                        *args], cwd=repo, capture_output=True, check=False, timeout=300)
+        if result.returncode:
+            text = result.stderr.decode('utf-8', errors='replace').lower()
+            tags = ['operation not permitted', 'permission denied', 'not found',
+                    'xcrun', 'xcode', 'unable to access', 'could not', 'failed to',
+                    'unable to', 'dubious ownership', 'nothing to commit', 'index.lock']
+            (root / 'results/startup-summary.json').write_text(json.dumps({
+                'stage': 'git:' + args[0], 'exit_code': result.returncode,
+                'stderr_sha256': hashlib.sha256(result.stderr).hexdigest(),
+                'tags': [tag for tag in tags if tag in text]}))
+            return result.returncode
     commands = []
     if sys.platform == 'darwin':
         commands.append(('canary', ['-v', '-n0', '--timeout=120',

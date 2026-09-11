@@ -363,7 +363,7 @@ def test_new_child_has_fake_home_and_no_cloud_environment(fake_home, tmp_path):
         [
             sys.executable,
             "-c",
-            "import os,pathlib; from test_isolation import require_isolated_environment; root=require_isolated_environment(); root.validate(os.environ['HOME']); assert pathlib.Path(os.environ['HOME'], '.aws', 'credentials').is_file(); assert not any(k.startswith(('AWS_', 'CLOUDFLARE_', 'R2_')) for k in os.environ)",
+            "import os,pathlib; from test_isolation import AllowedTestRoot; root=AllowedTestRoot(os.environ['KIROCREW_TEST_ROOT']); root.validate(os.environ['HOME']); assert pathlib.Path(os.environ['HOME'], '.aws', 'credentials').is_file(); assert not any(k.startswith(('AWS_', 'CLOUDFLARE_', 'R2_')) for k in os.environ)",
         ],
         cwd=tmp_path,
         capture_output=True,

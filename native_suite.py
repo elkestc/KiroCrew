@@ -139,7 +139,13 @@ def macos(source, owned, canary):
     python = venv / 'bin/python'
     execute([uv, 'pip', 'install', '--python', str(python), '-e', '.[voice,desktop]', '--group', 'dev'],
             env=env, cwd=root / 'repo', timeout=600)
-    env['PATH'] = str(python.parent) + ':/usr/bin:/bin:/opt/homebrew/bin'
+    # /usr/bin/git is an Xcode selector on hosted macOS. Resolve the public
+    # tool before confinement and allow that explicit vendor runtime only.
+    git = Path(execute(['/usr/bin/xcrun', '--find', 'git'], env=env, cwd=prep).decode().strip()).resolve(strict=True)
+    assert git.is_relative_to('/Applications') or git.is_relative_to('/Library/Developer/CommandLineTools')
+    git_runtime = next((parent for parent in git.parents if parent.suffix == '.app'),
+                       Path('/Library/Developer/CommandLineTools'))
+    env['PATH'] = str(python.parent) + ':' + str(git.parent) + ':/usr/bin:/bin:/opt/homebrew/bin'
     env['KIROCREW_TEST_HOST_CANARY'] = str(canary)
     env.pop('UV_CACHE_DIR')
     env.pop('UV_PYTHON_INSTALL_DIR')
@@ -152,7 +158,7 @@ def macos(source, owned, canary):
              '(allow system-socket (socket-domain AF_UNIX))',
              '(allow network-bind (local unix-socket (subpath ' + literal(root) + ')))',
              '(allow network-outbound (remote unix-socket (subpath ' + literal(root) + ')))']
-    for path in ['/System', '/usr', '/bin', '/opt/homebrew', '/Library/Developer/CommandLineTools', runtime, root]:
+    for path in ['/System', '/usr', '/bin', '/opt/homebrew', '/Library/Developer/CommandLineTools', git_runtime, runtime, root]:
         rules.append('(allow file-read* (subpath ' + literal(path) + '))')
     rules.append('(allow file-write* (subpath ' + literal(root) + '))')
     for path in ['/dev/null', '/dev/urandom', '/dev/random']:
@@ -186,6 +192,9 @@ def main():
         summary.update(windows(source, owned, canary, sys.argv[1]) if sys.platform == 'win32'
                        else macos(source, owned, canary))
         report = owned / 'results/suite-summary.json'
+        startup = owned / 'results/startup-summary.json'
+        if startup.is_file():
+            summary['startup'] = json.loads(startup.read_text())
         if report.is_file():
             summary['suites'] = json.loads(report.read_text())
             summary['passed'] = summary['exit_code'] == 0 and all(item['passed'] for item in summary['suites'])
