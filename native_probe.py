@@ -32,10 +32,17 @@ def execute(argv, **kwargs):
                         'network', 'connection', 'not found', 'unexpected status',
                         'unauthorized', 'tls', 'certificate', 'mismatch',
                         'directory', 'exist', 'invalid', 'not supported',
-                        'copying between containers', 'no such']
-        lowered = result.stderr.decode('utf-8', errors='replace').lower()
+                        'copying between containers', 'no such', 'externally managed',
+                        'externally-managed', 'virtual environment', 'buildx', 'dockerfile',
+                        'no builder', 'error during connect', 'hyper-v', 'compute system',
+                        'no solution', 'no build', '--system', 'group', 'unknown',
+                        'network adapter', 'invalid response', 'failed to create', 'pull access denied',
+                        'docker_engine', 'working directory', 'failed to open', 'uv pip',
+                        'error: failed to', 'isolation', 'the system cannot find the file specified']
+        lowered = (result.stderr + result.stdout).decode('utf-8', errors='replace').lower()
         raise RuntimeError(json.dumps({'exit_code': result.returncode,
                                       'stderr_sha256': digest(result.stderr),
+                                      'stdout_sha256': digest(result.stdout),
                                       'operation': Path(argv[0]).name + ':' + argv[1],
                                       'diagnostic_tags': [tag for tag in known_errors if tag in lowered]}))
     return result.stdout

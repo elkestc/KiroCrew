@@ -38,7 +38,7 @@ def verify_native_boundary():
         if check(os.getpid(), None, 0) != 1:
             raise RuntimeError("macOS OS sandbox is required")
         runtime = ("/System", "/usr", "/bin", "/opt/homebrew",
-                   "/Library/Developer/CommandLineTools", str(Path(sys.base_prefix)))
+                   "/Library/Developer/CommandLineTools", str(Path(sys.base_prefix)), str(Path(sys.prefix)))
     else:
         raise RuntimeError("Unsupported native test boundary")
     # This is a newly created fake file outside the allowed root. Never probe a

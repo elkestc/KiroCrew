@@ -65,7 +65,7 @@ RUN python -m pip install uv
 RUN uv pip install --system -e ".[voice,desktop]" --group dev
 ''')
     image_file = owned / 'image-id'
-    execute(['docker', 'build', '--iidfile', str(image_file), str(context)], timeout=1800)
+    execute(['docker', 'build', '--isolation=process', '--iidfile', str(image_file), str(context)], timeout=1800)
     image = image_file.read_text().strip()
     assert re.fullmatch(r'sha256:[0-9a-f]{64}', image)
     child_root = Path(r'C:\test-root')
@@ -109,6 +109,9 @@ def macos(source, owned, canary):
     execute([uv, 'python', 'install', '--no-config', '--no-bin', '3.12'], env=env, cwd=prep, timeout=300)
     python = Path(execute([uv, 'python', 'find', '--managed-python', '3.12'], env=env, cwd=prep).decode().strip())
     assert python.resolve().is_relative_to(runtime)
+    venv = runtime / 'venv'
+    execute([uv, 'venv', '--python', str(python), str(venv)], env=env, cwd=prep)
+    python = venv / 'bin/python'
     execute([uv, 'pip', 'install', '--python', str(python), '-e', '.[voice,desktop]', '--group', 'dev'],
             env=env, cwd=root / 'repo', timeout=600)
     env['PATH'] = str(python.parent) + ':/usr/bin:/bin:/opt/homebrew/bin'
@@ -172,7 +175,7 @@ def main():
                 detail = json.loads(str(error))
             except ValueError:
                 detail = {}
-            if set(detail) <= {'exit_code', 'stderr_sha256', 'operation', 'diagnostic_tags'}:
+            if set(detail) <= {'exit_code', 'stderr_sha256', 'stdout_sha256', 'operation', 'diagnostic_tags'}:
                 summary.update(detail)
     summary['host_canary_unchanged'] = digest(canary.read_bytes()) == before
     summary['passed'] = summary['passed'] and summary['host_canary_unchanged']
