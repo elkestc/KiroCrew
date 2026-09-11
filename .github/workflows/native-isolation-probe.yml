@@ -1,0 +1,29 @@
+name: Native isolation probe
+on:
+  push:
+    branches: [validation/native-isolation-20260911]
+permissions:
+  contents: read
+jobs:
+  probe:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2025, macos-14]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify native containment using synthetic canaries
+        run: python native_probe.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-isolation-${{ matrix.os }}
+          path: probe-summary.json
+          if-no-files-found: error
